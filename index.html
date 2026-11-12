@@ -46,6 +46,15 @@ h1 span { color: var(--gold); }
 .lede { margin: 0; color: var(--muted); max-width: 66ch; }
 h2 { font: 600 14px/1 var(--font-display); letter-spacing: .12em; text-transform: uppercase; margin: 0; color: var(--muted); }
 .section { display: grid; gap: 14px; }
+.section h2 { display: flex; align-items: center; gap: 10px; }
+.sec-tog { font: 600 11px/1 var(--font-body); letter-spacing: .06em; text-transform: none; padding: 4px 8px; border-radius: 6px; background: transparent; color: var(--gold); border: 1px solid var(--line); cursor: pointer; }
+.sec-tog:hover { border-color: var(--gold); }
+.section.collapsed > :not(h2):not(#result) { display: none; }
+.res-pop { position: fixed; inset: 0; z-index: 60; background: rgba(0, 0, 0, .62); display: grid; place-items: center; padding: 16px; overflow: auto; animation: res-fade .25s ease both; }
+.res-pop .result { width: 100%; max-width: 640px; max-height: calc(100vh - 32px); overflow: auto; position: relative; box-shadow: 0 18px 50px rgba(0, 0, 0, .45); }
+.res-close { position: absolute; top: 10px; right: 10px; width: 32px; height: 32px; border-radius: 8px; background: transparent; color: var(--muted); border: 1px solid var(--line); font-size: 16px; cursor: pointer; }
+@keyframes res-fade { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .res-pop { animation: none; } }
 
 .quest { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; display: grid; gap: 12px; }
 .q-head { display: grid; gap: 2px; }
@@ -314,19 +323,19 @@ button.act.fill { background: var(--gold-soft); color: var(--ink); border-color:
   </header>
 
   <section class="section" aria-labelledby="quest-h" id="quest-sec" hidden>
-    <h2 id="quest-h">Quest</h2>
+    <h2 id="quest-h">Quest <button type="button" class="sec-tog" data-sec="quest-sec" hidden></button></h2>
     <div class="quest" id="quest"></div>
   </section>
 
   <div class="dock" id="dock" aria-label="Team so far" hidden></div>
   <section class="section" aria-labelledby="party-h" id="party-sec">
-    <h2 id="party-h">Party</h2>
+    <h2 id="party-h">Party <button type="button" class="sec-tog" data-sec="party-sec" hidden></button></h2>
     <div class="formation" id="formation"></div>
     <div class="mc" id="mc"></div>
   </section>
 
-  <section class="section" aria-labelledby="stage-h">
-    <h2 id="stage-h">Stages</h2>
+  <section class="section" aria-labelledby="stage-h" id="stage-sec">
+    <h2 id="stage-h">Stages <button type="button" class="sec-tog" data-sec="stage-sec" hidden></button></h2>
     <div class="steps" id="steps"></div>
     <div id="banner"></div>
     <div class="key" id="key"></div>
@@ -342,7 +351,7 @@ button.act.fill { background: var(--gold-soft); color: var(--ink); border-color:
 (() => {
   // Injected by build-game.js. CFG holds no answers; answers live only in ENC.
   const CFG = {"faces":null,"ceIcons":{},"ceInfo":{"2136":{"base":"Gain 4% NP each turn, Arts +8%, NP damage +15%","mlb":"Gain 5% NP each turn, Arts +10%, NP damage +20%","event":"Increase Deco Paint drops by 1 (MLB: 2)"},"2137":{"base":"Quick +3%, Arts +3%, critical damage +5%, gain 2 stars each turn","mlb":"Quick +5%, Arts +5%, critical damage +10%, gain 3 stars each turn","event":"Increase Guide Rope drops by 1 (MLB: 2)"},"2138":{"base":"Buster +3%, Buster critical damage +15%","mlb":"Buster +5%, Buster critical damage +20%","event":"Increase Design Note drops by 1 (MLB: 2)"}},"voices":null,"ceVoices":{},"summary":{"title":"Why this team works","points":["Every slot carries a Mystery House currency CE for the extra drops, and Tutankhamun deals +100% damage in this event, so the team is built to give him the final wave.","Ptolemy’s S3 turns him into his old-man form, which switches his NP from single-target Buster to AoE Arts. His three skills plus Castoria’s S3 take him from 20% to a full gauge in wave 1, and his NP refund carries 30% into wave 2.","In wave 2, Castoria’s S1 and S2 put Ptolemy at 80%, then Order Change sends her out for Miss Crane. Ptolemy’s wave 1 NP left 16 crit stars, and Crane’s S1 adds 10 more thanks to Tut’s costume, clearing the 20 stars her NP needs. Tut’s S1 tops Ptolemy up to 100%, and Tut’s S3 gives him the guts he needs to survive his own NP’s self-KO.","The wave 2 NP chain is the trick. Tut goes first on the 352,934 HP Hell Missile Zombie, which Ptolemy’s AoE could never kill. The two mechs are still standing, so Crane’s NP still fires and hands Tut 35% back before she retreats. Ptolemy goes last and clears the mechs.","Crane’s retreat brings Yui in for wave 3. Tut starts at 54%, and his S2 plus Yui’s S2 take him past 100%. Yui’s S3 and Decisive Battle’s S1 then buff him for the 1,005,200 HP boss."]},"ranks":[[1,"Vincent van Gold","Van Gogh plus striking gold. A near-flawless dig."],[3,"The Starry Night Shift","Van Gogh’s The Starry Night meets a miner’s night shift. It’s also the name of Tut’s CE."],[5,"Theo’s Prized Pickaxe","Theo van Gogh, an art dealer, backed his brother with money and letters all his life. You’re the tool he’d bet on."],[8,"The Call of the Quarry","A nod to Lovecraft’s The Call of Cthulhu. In FGO, Van Gogh carries something eldritch inside her."],[11,"Borinage Preacher","Before he painted, Vincent preached to the coal miners of the Borinage in Belgium, until the church let him go."],[14,"At the Mines of Madness","A nod to Lovecraft’s At the Mountains of Madness. You dug too deep."],[null,"Lost an Ear to the Deep Ones","Van Gogh’s famous ear, meet Lovecraft’s Deep Ones. Back to the surface for another try."]],"spriteCredit":"","title":"Tut Team-dle","eyebrow":"Mystery House Crafters · Ghost Room 90++ · Guess the team","lede":"Tutankhamun leads into the Mystery House Crafters 90++ with a currency CE on every slot. Rebuild the rest of the team in four stages: the servants, each one's CE, their NP levels, and finally the skill order for every wave.","shareEmoji":"⛏️","notes":[["Mystic Code","Decisive Battle"],["Backline 3","Any servant holding the 3★ currency CE"]],"quest":{"name":"[Ghost Room] Dangerous Inventions","event":"Break Through! Mystery House Crafters — The Star Miner and the Wings of Sunrise","ap":40,"level":"90++","notes":["Tutankhamun +100% event damage","Every slot holds a currency CE"],"waves":[[{"name":"Daedalus Mech A","cls":"Saber","hp":87697,"bars":0,"sprite":null},{"name":"Daedalus Mech B","cls":"Saber","hp":89598,"bars":0,"sprite":null}],[{"name":"Daedalus Mech A","cls":"Saber","hp":102286,"bars":0,"sprite":null},{"name":"Hell Missile Zombie","cls":"Saber","hp":352934,"bars":0,"sprite":null},{"name":"Daedalus Mech B","cls":"Saber","hp":104221,"bars":0,"sprite":null}],[{"name":"Undying Ultimate Weapon","cls":"Saber","hp":1005200,"bars":0,"sprite":null}]]},"footer":"Fan-made, non-commercial. No official images, icons, audio or video from Fate/Grand Order are used; only names, game stats and short quotations, per TYPE-MOON's fan-work guidelines. Data from Atlas Academy. Fate/Grand Order is © TYPE-MOON / FGO PROJECT. Not affiliated with TYPE-MOON, Aniplex or Lasengle.","storageKey":"tut-mystery-house-teamdle-v9-compliant","stages":[{"kind":"servant","tries":5},{"kind":"ce","tries":3,"pool":[2136,2137,2138]},{"kind":"np","tries":2},{"kind":"route","tries":5}],"shown":[{"label":"Front 1 · Lead","servant":427,"style":"","facts":[["CE","Pilgrimage on The Starry Night · Lv1 · not MLB"],["NP","NP2"]],"extra":["Mana Loading 10 (20% start)"],"ce":null,"ceMlb":false,"sprite":null}],"slots":[{"name":"Front 2","short":"F2","style":"","ceDetail":"Lv1 · not MLB","extra":["Mana Loading 10 (20% start)","Starts in his young-man ascension"]},{"name":"Front 3","short":"SUP","style":"","ceDetail":"Not MLB (any CE works here)","extra":["Borrowed support","Skills 10/10/10"]},{"name":"Backline 1","short":"B1","style":"backline","ceDetail":"Not MLB (any CE works here)","extra":["Skills 10/10/10"]},{"name":"Backline 2","short":"B2","style":"backline","ceDetail":"Not MLB (any CE works here)","extra":[]}]};
-  const ENC = {"k":[12,33,158,43],"d":"DYYgPZ8KKhhffXJazeV4rgwNISCenysq","r":{"k":[127,166,228,154,79,154,42,124],"d":"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"},"s":null};
+  const ENC = {"k":[98,3,200,31],"d":"Y+gCH8lcHiwxE1B4m7NMmmJjAwLIyR8e","r":{"k":[60,19,102,61,243,207,161,140],"d":"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"},"s":null};
 
   const norm = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -1018,27 +1027,52 @@ button.act.fill { background: var(--gold-soft); color: var(--ink); border-color:
     return `<div class="summary"><h4>${esc(s.title || "Why this team works")}</h4><ol>${(s.points || []).map(p => `<li>${esc(p)}</li>`).join("")}</ol>${link}</div>`;
   }
 
+  let resPop = false, lastFin = null;
+  const openSec = new Set();
+  function renderSections(fin) {
+    document.querySelectorAll(".sec-tog").forEach(b => {
+      const id = b.dataset.sec, sec = $(id), shut = fin && !openSec.has(id);
+      b.hidden = !fin;
+      b.textContent = shut ? "Show ▾" : "Hide ▴";
+      b.setAttribute("aria-expanded", String(!shut));
+      sec.classList.toggle("collapsed", shut);
+      b.onclick = () => { openSec.has(id) ? openSec.delete(id) : openSec.add(id); render(); };
+    });
+  }
+
   function renderResult() {
     if (current() !== STAGES.length) { $("result").innerHTML = ""; return; }
     const total = STAGES.reduce((n, S) => n + S.cols, 0);
     const found = STAGES.reduce((n, _, st) => n + COLS(st).filter(i => won(st, i)).length, 0);
     const rk = rankOf();
-    $("result").innerHTML = `<div class="result"><h3>${found === total ? "Perfect team" : `${found} of ${total} found`}</h3>
+    $("result").innerHTML = `${resPop ? '<div class="res-pop" id="respop" role="dialog" aria-modal="true" aria-label="Your result">' : ""}<div class="result">${resPop ? '<button type="button" class="res-close" id="resclose" aria-label="Close">✕</button>' : ""}<h3>${found === total ? "Perfect team" : `${found} of ${total} found`}</h3>
       <p class="rank">🏅 Rank: <b>${esc(rk.title)}</b> <span class="note">${rk.extra === 0 ? "every card on the first try" : `${rk.extra} extra ${rk.extra === 1 ? "try" : "tries"}`}${state.hard ? " · 🔥 Hard" : ""}</span></p>${rk.why ? `<p class="rank-why">${esc(rk.why)}</p>` : ""}
       ${summaryHtml()}
-      <p class="note" style="margin:0">The full builds are in the party above, and each wave card shows its route.</p>
+      <p class="note" style="margin:0">Tap <b>Show</b> next to Party for the full builds, or next to Stages for each wave's route.</p>
       <pre id="share">${esc(shareText())}</pre>
-      <div class="actions"><button class="primary" type="button" id="copy">Copy result for Reddit</button><button class="ghost" type="button" id="reset">Play again</button><span class="note" id="copymsg" role="status"></span></div></div>`;
+      <div class="actions"><button class="primary" type="button" id="copy">Copy result for Reddit</button><button class="ghost" type="button" id="reset">Play again</button><span class="note" id="copymsg" role="status"></span></div></div>${resPop ? "</div>" : ""}`;
+    if (resPop) {
+      const shut = () => { resPop = false; document.removeEventListener("keydown", esc_); render(); $("result").scrollIntoView?.({ block: "start" }); };
+      const esc_ = e => { if (e.key === "Escape") shut(); };
+      document.addEventListener("keydown", esc_);
+      $("resclose").onclick = shut;
+      $("respop").onclick = e => { if (e.target.id === "respop") shut(); };
+      $("resclose").focus();
+    }
     $("copy").onclick = () => {
       const ok = () => { $("copymsg").textContent = "Copied. Paste it in the thread."; };
       const fallback = () => { const r = document.createRange(); r.selectNodeContents($("share")); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); $("copymsg").textContent = "Selected. Press Ctrl+C to copy."; };
       try { navigator.clipboard.writeText(shareText()).then(ok, fallback); } catch { fallback(); }
     };
-    $("reset").onclick = () => { state = fresh(); save(); render(); };
+    $("reset").onclick = () => { state = fresh(); save(); resPop = false; openSec.clear(); render(); };
   }
 
   function render() {
     renderHard();
+    const fin = current() === STAGES.length;
+    if (fin && lastFin === false) { resPop = true; openSec.clear(); }
+    lastFin = fin;
+    renderSections(fin);
     if (!unlocked(state.view)) state.view = Math.min(current(), STAGES.length - 1);
     const st = state.view;
     renderFormation(); renderSteps(); renderResult();
